@@ -961,16 +961,12 @@ z_and:          rts
 xt_at_xy:
                 jsr underflow_2
 
-                lda #AscESC
+                lda #$0E
                 jsr emit_a
-                lda #$5B        ; ASCII for "["
+                jsr xt_emit
+                lda #$0F
                 jsr emit_a
-                jsr print_u
-                lda #$3B        ; ASCII for ";"
-                jsr emit_a
-                jsr print_u
-                lda #'H
-                jsr emit_a
+                jsr xt_emit
 
 z_at_xy:        rts
 
@@ -7145,13 +7141,7 @@ z_pad:          rts
         ; left of the screen
         ; """
 xt_page:
-                lda #AscESC
-                jsr emit_a
-                lda #$5B        ; ASCII for "["
-                jsr emit_a
-                lda #'2
-                jsr emit_a
-                lda #'J
+                lda #$0C
                 jsr emit_a
 
                 ; move cursor to top left of screen

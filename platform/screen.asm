@@ -1,3 +1,6 @@
+; This uses the screen part of Grant Searle's ATMega based terminal.
+; See: http://searle.x10host.com/MonitorKeyboard/index.html
+
 .alias          IO_PORTB                $6000                        ; Data port B
 .alias          IO_PORTA                $6001                        ; Data port A
 .alias          IO_DDRB                 $6002                        ; Data direction of port B
