@@ -286,8 +286,8 @@ cold_user_table:
         .word cp0+256                   ; Address of buffer (right after USER vars)
         .word 0                         ; block in buffer
         .word 0                         ; buffer status (not in use)
-        .word xt_block_word_error       ; block-read vector
-        .word xt_block_word_error       ; block-write vector
+        .word read_forth_block          ; block-read vector
+        .word write_forth_block         ; block-write vector
 cold_user_table_end:
 
 
