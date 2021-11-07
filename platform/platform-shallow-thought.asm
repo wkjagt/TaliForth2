@@ -160,6 +160,7 @@ kernel_init:
                 sta     SER_CTL
 
                 jsr     init_storage
+                jsr     init_screen
 
                 ; We've successfully set everything up, so print the kernel
                 ; string
@@ -189,21 +190,27 @@ _loop:
                 RTS
 .scend
 
-
+.scope
 kernel_putc:
+                PHA
+                PHX
                 PHY
-                LDY #$ff
-wait_txd_empty:
-                DEY
-                BNE wait_txd_empty
-                STA SER_DATA
+                cmp #AscLF
+                bne +
+                pha
+                lda #AscCR
+                jsr write_byte
+                pla
+*
+                jsr write_byte
                 PLY
+                PLX
+                PLA
                 RTS
-
-;E08F BLOCK-WRITE-VECTOR !  ok
-;E03E BLOCK-READ-VECTOR !  ok
+.scend
 
 .require "./storage.asm"
+.require "./screen.asm"
 
 ; Leave the following string as the last entry in the kernel routine so it
 ; is easier to see where the kernel ends in hex dumps. This string is
