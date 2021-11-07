@@ -27,21 +27,11 @@ init_storage:
                 ora     #[DATA_PIN | CLOCK_PIN]
                 sta     PORTA_DDR
 
-                ; set the vectors so we don't have to do it in code
-                ;E0A3 BLOCK-WRITE-VECTOR !  ok
-                ;E04E BLOCK-READ-VECTOR !  ok
-
-                lda #<read_forth_block
-                sta <[cp0 + blockread_offset]
-                lda #>read_forth_block
-                sta >[cp0 + blockread_offset]
-
-                lda #<write_forth_block
-                sta <[cp0 + blockwrite_offset]
-                lda #>write_forth_block
-                sta >[cp0 + blockwrite_offset]
-
                 rts
+
+; NOTE: The read_forth_block and write_forth_block routines are almost identical
+; and need to be refactored. For now I want to get things stable first, and then
+; optimze.
 
 .scope
 read_forth_block:
@@ -448,7 +438,7 @@ _stop_condition:
                 and     #[DATA_PIN^$FF]  ; data low
                 sta     PORTA
                 jsr     _clock_high      ; clock high
-                lda     PORTA
+                lda     PORTA               ; TODO: can I get rid of this?
                 ora     #DATA_PIN        ; data high
                 sta     PORTA
                 rts
@@ -482,9 +472,18 @@ transmit_byte:
 _transmit_loop:
                 ; Set next byte on bus while clock is still low
                 asl     BYTE_OUT        ; shift next bit into carry
-                rol                     ; shift carry into bit 0 of A
+                lda     PORTA
+                bcc     _send_zero
+
+                ; send one
+                ora     #DATA_PIN
+                jmp     _continue
+_send_zero:
+                and     #[DATA_PIN^$FF]
+_continue:
                 and     #[CLOCK_PIN^$FF]; make sure clock is low when placing the bit on the bus
                 sta     PORTA
+
                 jsr     _clock_high     ; toggle clock to strobe it into the eeprom
                 jsr     _clock_low
 
@@ -493,17 +492,13 @@ _transmit_loop:
 
                 ; After each byte, the EEPROM expects a clock cycle during which 
                 ; it pulls the data line low to signal that the byte was received
-                lda     PORTA_DDR
-                and     #[DATA_PIN^$FF]  ; set data line as input to receive ack
-                sta     PORTA_DDR
+                jsr     _data_in
                 jsr     _clock_high
                 lda     PORTA
                 and     #DATA_PIN       ; only save last bit
                 sta     LAST_ACK_BIT
                 jsr     _clock_low
-                lda     PORTA_DDR
-                ora     #DATA_PIN       ; set data line back to output
-                sta     PORTA_DDR
+                jsr     _data_out
                 ply
                 pla
                 rts

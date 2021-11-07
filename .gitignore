@@ -2,4 +2,7 @@
 *.pyc
 *.lof
 *.log
+*.bin
+*.map
+*.lst
 *~
