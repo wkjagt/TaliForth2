@@ -1,4 +1,5 @@
 ; SAVE "HELLO WORLD" TO EEPROM AND READ IT BACK
+; uses memory locations F0 - F8
 
 .alias          BYTE_OUT                $F0             ; address used for shifting bytes
 .alias          BYTE_IN                 $F1             ; address used to shift reveived bits into

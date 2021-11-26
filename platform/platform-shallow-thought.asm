@@ -161,6 +161,7 @@ kernel_init:
 
                 jsr     init_storage
                 jsr     init_screen
+                jsr     init_keyboard
 
                 ; We've successfully set everything up, so print the kernel
                 ; string
@@ -175,21 +176,8 @@ _done:
 .scend
 
 kernel_getc:
-        ; """Get a single character from the keyboard. By default, py65mon
-        ; is set to $f004, which we just keep. Note that py65mon's getc routine
-        ; is non-blocking, so it will return '00' even if no key has been
-        ; pressed. We turn this into a blocking version by waiting for a
-        ; non-zero character.
-        ; """
-.scope
-_loop:
-                LDA SER_ST
-                AND #SER_RXFL
-                BEQ _loop
-                LDA SER_DATA
-                RTS
-.scend
-
+                jsr keyboard_get_key
+                rts
 .scope
 kernel_putc:
                 PHA
@@ -211,6 +199,7 @@ kernel_putc:
 
 .require "./storage.asm"
 .require "./screen.asm"
+.require "./keyboard.asm"
 
 ; Leave the following string as the last entry in the kernel routine so it
 ; is easier to see where the kernel ends in hex dumps. This string is
