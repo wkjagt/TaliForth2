@@ -583,7 +583,7 @@ print_string_no_lf:
         ; through to print_common
         ; """
                 ; Get the entry from the string table
-                asl
+                asl                     ; multiply by 2 because size of memory address is 2 bytes
                 tay
                 lda string_table,y
                 sta tmp3                ; LSB

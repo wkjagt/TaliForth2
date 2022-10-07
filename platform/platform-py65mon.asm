@@ -176,7 +176,10 @@ kernel_putc:
         ; """
                 sta $f001
                 rts
-
+read_forth_block:
+        rts
+write_forth_block:
+        rts
 
 ; Leave the following string as the last entry in the kernel routine so it
 ; is easier to see where the kernel ends in hex dumps. This string is
